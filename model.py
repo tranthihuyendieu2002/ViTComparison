@@ -135,7 +135,7 @@ class ModelModule(LightningModule):
         self.log('train_loss_epoch', train_loss)
         self.train_accuracy = []
         self.train_loss = []
-        print(f'Training Accuracy: {train_accuracy:.4f} Training Loss: {train_loss:.4f}')
+        # print(f'Training Accuracy: {train_accuracy:.4f} Training Loss: {train_loss:.4f}')
 
     def on_validation_epoch_end(self) -> None:
         val_accuracy = torch.stack(self.val_accuracy).mean()
@@ -144,8 +144,8 @@ class ModelModule(LightningModule):
         self.log('val_loss_epoch', val_loss)
         self.val_accuracy = []
         self.val_loss = []
-        epoch = self.current_epoch + 1
-        print(f'Epoch: {epoch} Validation Accuracy: {val_accuracy:.4f} Validation Loss: {val_loss:.4f}')
+        # epoch = self.current_epoch + 1
+        # print(f'Epoch: {epoch} Validation Accuracy: {val_accuracy:.4f} Validation Loss: {val_loss:.4f}')
 
     def on_test_epoch_end(self) -> None:
         self.log('test_accuracy_epoch', torch.stack(self.test_accuracy).mean())

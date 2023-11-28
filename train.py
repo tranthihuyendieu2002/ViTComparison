@@ -1,4 +1,4 @@
-import dataset
+import datasets
 import model
 
 from lightning import Trainer
@@ -28,27 +28,30 @@ if __name__ == '__main__':
     EPOCHS = args.epochs
     LEARNING_RATE = args.learning_rate
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    IMG_SIZE = (224, 224)
-    PATCH_SIZE = (16, 16)
 
     if args.dataset == 'flowers102':
         DATASET = Flowers102
         N_CLASSES = 102
         IMG_SIZE = (224, 224)
+        PATCH_SIZE = (16, 16)
     elif args.dataset == 'oxfordiiitpet':
         DATASET = OxfordIIITPet
         N_CLASSES = 37
         IMG_SIZE = (224, 224)
+        PATCH_SIZE = (16, 16)
     elif args.dataset == 'cifar10':
         DATASET = CIFAR10
         N_CLASSES = 10
         IMG_SIZE = (32, 32)
+        PATCH_SIZE = (4, 4)
     elif args.dataset == 'cifar100':
         DATASET = CIFAR100
         N_CLASSES = 100
         IMG_SIZE = (32, 32)
+        PATCH_SIZE = (4, 4)
     else:
         raise Exception('No Dataset')
+
 
     if args.model == 'vit':
         MODEL = model.ViT(img_size=IMG_SIZE, patch_size=PATCH_SIZE, n_channels=3, 
@@ -60,14 +63,16 @@ if __name__ == '__main__':
     else:
         raise Exception('No Model')
     
-    wandb_logger = WandbLogger(project='ViT_test_flower_102',
-                               config={'batch_size': BATCH_SIZE, 'epochs': EPOCHS, 'learning_rate': LEARNING_RATE, 
+
+    wandb_logger = WandbLogger(project='ViT_test',
+                               config={'batch_size': BATCH_SIZE, 'epochs': EPOCHS, 
+                                       'learning_rate': LEARNING_RATE, 
                                        'img_size': IMG_SIZE, 'patch_size': PATCH_SIZE})
     trainer = Trainer(max_epochs=EPOCHS,
                       accelerator='gpu' if torch.cuda.is_available() else 'cpu',
                       callbacks=[ModelSummary(max_depth=-1), EarlyStopping(monitor='val_loss_epoch')],
                       logger=wandb_logger)
-    data_module = dataset.DataModule(IMAGE_SIZE=IMG_SIZE, batch_size=BATCH_SIZE, dataset=DATASET)
+    data_module = datasets.DataModule(IMAGE_SIZE=IMG_SIZE, batch_size=BATCH_SIZE, dataset=DATASET)
     train_model = model.ModelModule(model=MODEL, learning_rate=LEARNING_RATE)
     
     trainer.fit(train_model, data_module)
