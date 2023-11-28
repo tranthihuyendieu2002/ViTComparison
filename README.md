@@ -11,7 +11,7 @@ pip install -r requirement.txt
 
 2. Training:
 ```bash
-py train.py
+python train.py
 ```
 
 ## Usage
